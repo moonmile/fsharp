@@ -1,4 +1,4 @@
-{
+﻿{
 
 module internal Microsoft.FSharp.Compiler.Lexer
 
@@ -110,6 +110,7 @@ let lexemeTrimRightToInt32 args lexbuf n =
 // Checks
 
 let checkExprOp (lexbuf:UnicodeLexing.Lexbuf) = 
+    printfn "ExprOp:%A" (lexeme lexbuf)
     if String.contains (lexeme lexbuf)  ':' then 
         deprecatedWithError (FSComp.SR.lexCharNotAllowedInOperatorNames(":")) lexbuf.LexemeRange;
     if String.contains (lexeme lexbuf)  '$' then 
@@ -171,6 +172,7 @@ let truewhite = [' ']
 let offwhite = ['\t']
 let anywhite = truewhite | offwhite
 let op_char = '!'|'$'|'%'|'&'|'*'|'+'|'-'|'.'|'/'|'<'|'='|'>'|'?'|'@'|'^'|'|'|'~'|':'
+    | ['\u2190'-'\u245f']
 let ignored_op_char = '.' | '$' | '?'
 let xinteger = 
   (  '0' ('x'| 'X')  hex + 
@@ -228,6 +230,7 @@ let ident_char =
 let ident = ident_start_char ident_char*
 
 rule token args skip = parse
+ | ignored_op_char* (['\u2190'-'\u245f']) op_char* { checkExprOp lexbuf; PLUS_MINUS_OP(lexeme lexbuf) }
  | ident 
      { Keywords.KeywordOrIdentifierToken args lexbuf (lexeme lexbuf) }
  | "do!" 

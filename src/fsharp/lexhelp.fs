@@ -311,6 +311,7 @@ module Keywords =
         args.resourceManager.InternIdentifierToken s
 
     let KeywordOrIdentifierToken args (lexbuf:UnicodeLexing.Lexbuf) s =
+        printfn "keyword:%A" s
         if not permitFsharpKeywords && List.mem s unreserveWords then
             // You can assume this condition never fires - this is a deprecated, undocumented command line option anyway, we can ignore it.
             IdentifierToken args lexbuf s
